@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+<title>test1个人jquery测试</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="renderer" content="webkit">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="jquery.js"></script>
+
+</head>
+	<body>
+	<canvas id="myCanvas" width="1200" height="600" style="border:1px solid #000000;">
+	</canvas>
+	<script type="text/javascript">
+ 		// alert(a.length);
+ 		var c=document.getElementById("myCanvas");
+		var cxt=c.getContext("2d");
+		function Circle(cxt,r){
+			this.speed=Math.floor(Math.random()*6)+1;
+			this.r=r;
+			this.cxt=cxt;
+			this.x=Math.floor(Math.random()*1200);
+			this.y=Math.floor(Math.random()*600);
+			this.color="rgb("+Math.random()*255+","+Math.random()*255+","+Math.random()*255+")";
+		}
+		Circle.prototype.draw=function(){
+			this.cxt.beginPath();
+			this.cxt.arc(this.x,this.y,this.r,0,Math.PI*2,true);
+			this.cxt.fillStyle=this.color;
+			this.cxt.closePath();
+			this.cxt.fill();
+		}
+		Circle.prototype.clear=function(){
+			this.cxt.clearRect(this.x-this.r,this.y-this.r,this.r*2,this.r*2);
+		}
+		Circle.prototype.flagX=true;
+		Circle.prototype.flagY=true;
+		Circle.prototype.run1=function(){
+			var _this=this;
+			setInterval(function(){
+				_this.clear();
+
+				crashTest(_this);
+				if(_this.flagX==true&&_this.x>=1190){
+					_this.flagX=false;
+				}else if(_this.flagX==false && _this.x<=10){
+					_this.flagX=true;
+				}
+				if(!_this.flagX){
+					_this.x-=_this.speed;
+				}else{
+					_this.x+=_this.speed;
+				}
+				if(_this.flagY==true&&_this.y>=590){
+					_this.flagY=false;
+				}else if(_this.flagY==false && _this.y<=10){
+					_this.flagY=true;
+				}
+				if(!_this.flagY){
+					_this.y-=_this.speed;
+				}else{
+					_this.y+=_this.speed;
+				}
+				// console.log("y=="+_this.y+"-----x==="+_this.x);
+				
+				_this.draw();
+			},10);
+
+			this.clear();
+			this.x++;
+			this.y++;
+			this.draw();
+		}
+		var a=[];		
+		var crashTest=function(ball){
+			for(var b in a){
+				if(a[b]!=ball){
+					if(ball.speed>a[b].speed){
+						ball.speed=ball.speed<=0?ball.speed:ball.speed-1;;
+						a[b].speed++;
+					}else if(ball.speed < a[b].speed){
+						ball.speed=ball.speed>=6?ball.speed:ball.speed+1;
+						a[b].speed--;
+					}
+					//判断两圆心的距离 如果小于直径则判断碰撞
+					var x1=ball.x,y1=ball.y,x2=a[b].x,y2=a[b].y;
+					// console.log(x1+"=="+y1+"=="+x2+"=="+y2);
+					var distance=Math.sqrt(Math.pow((x2-x1),2)+Math.pow((y2-y1),2));
+					if(distance<=ball.r*2){
+						if(x1<x2){
+							ball.flagX=false;
+							a[b].flagX=true;
+						}else{
+							ball.flagX=true;
+							a[b].flagX=false;
+						}
+						if(y1<y2){
+							ball.flagY=false;
+							a[b].flagY=true;
+						}else{
+							ball.flagY=true;
+							a[b].flagY=false;
+						}
+					}
+				}
+			}
+		}
+		function main(){
+			var cir=new Circle(cxt,10);
+			cir.draw();
+			cir.run1();
+			a.push(cir);
+		}
+		(function(){
+			for(var x=0;x<20;x++){
+				main();
+			}
+		}());
+		
+
+		// setInterval(cir.run1,1000);
+		// setInterval(function(){alert("dd");},1000);
+
+
+		
+    </script>
+   
+	</body>
+</html>
